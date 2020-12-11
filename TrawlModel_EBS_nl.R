@@ -53,7 +53,7 @@ jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F"
 home.dir <- here::here()
 
 # collect data
-training.data <- read.csv(paste0(home.dir, "/variables/Variables_raw_data/EBS_Trawl_trainingdata.csv"),
+training.data <- read.csv(paste0("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_raw_data/2017/EBS_Trawl_trainingdata.csv"),
 	header = TRUE, stringsAsFactors = FALSE)
 
 for(i in 1:length(training.data$btemp)){
@@ -62,7 +62,7 @@ for(i in 1:length(training.data$btemp)){
 		}
 	}
 
-test.data <- read.csv(paste0(home.dir, "/variables/Variables_raw_data/EBS_Trawl_testdata.csv"),
+test.data <- read.csv(paste0("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_raw_data/2017/EBS_Trawl_testdata.csv"),
 	header = TRUE, stringsAsFactors = FALSE)
 
 for(i in 1:length(test.data$btemp)){
@@ -71,34 +71,33 @@ for(i in 1:length(test.data$btemp)){
 		}
 	}
 
-##################################### MAKE THE 1 KM BASE RASTERS ###############################################
-###MAKE THE 1 KM BASE RASTERS#####
-ak.coast <- rgdal::readOGR(dsn = "//akc0ss-n086/SEA_Programs/RACE_EFH_variables/shapefiles", layer = "namerica_dcw", verbose = F)
+##################################### COLLECT THE 1 KM BASE RASTERS ###############################################
+ak.coast <- rgdal::readOGR(dsn = "G:/AI-GOA/shapefiles", layer = "namerica_dcw", verbose = F)
 
 # (network location is \\akc0ss-n086/SEA_Programs/RACE_EFH_variables)
-bathy <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Bathy")
-slope <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Slope")
-color <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Color")
-tmax <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Tmax")
-bcurrent <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Bcurrent")
-btemp <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Btemp")
-phi <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/phi")
+bathy <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Bathy")
+slope <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Slope")
+color <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Color")
+tmax <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Tmax")
+bcurrent <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Bcurrent")
+btemp <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Btemp")
+phi <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Phi")
 lat <- raster::init(bathy, v ='y')
-lat <- raster::mask(lat, bathy, filename = "//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Lat",
+lat <- raster::mask(lat, bathy, filename = "G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Lat",
      overwrite = TRUE)
 lon <- raster::init(bathy, v ='x')
-lon <- raster::mask(lon, bathy, filename = "//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Lon",
+lon <- raster::mask(lon, bathy, filename = "G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Lon",
      overwrite = TRUE)
-coral <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Coralfactor")
-sponge <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Spongefactor")
-whips <- raster::raster("//akc0ss-n086/SEA_Programs/RACE_EFH_variables/Variables/Variables_EBS_1km/Whipsfactor")
+coral <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Coralfactor")
+sponge <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Spongefactor")
+whips <- raster::raster("G:/Laman/EFH-Descriptions/variables/Variables_EBS_1km/Whipsfactor")
 
 raster.stack <- raster::stack(lon, lat, bathy, slope, btemp, color, bcurrent, tmax, phi, sponge, coral, whips)
 names(raster.stack) <- c("lon","lat","bdepth","slope","btemp","color","speed", "tmax", "phi", "sponge", "coral", "pen")
 
 
 # load model plan to direct traffice amongst species, life stages, and models
-ModelPlan <- read.csv(paste0(home.dir, "/ModelPlan.csv"), header = TRUE, stringsAsFactors = FALSE)
+ModelPlan <- read.csv("G:/Laman/EFH-Descriptions/ModelPlan.csv", header = TRUE, stringsAsFactors = FALSE)
 ModelPlan <- subset(ModelPlan, ModelPlan$Region == "BS")
 species <- c(ModelPlan$Trawl_name_juvenile, ModelPlan$Trawl_name_adult)
 models <- c(ModelPlan$Trawl_model_juvenile, ModelPlan$Trawl_model_adult)
@@ -115,6 +114,7 @@ species <- species[species != ""]
 species_pct <- species
 
 for(j in 1:length(species)){
+#for(j in 1:1){
 	if(start_year[j] > 1990){
 		training.dat <- subset(training.data, training.data$year >= start_year[j])
 		test.dat <- subset(test.data, test.data$year >= start_year[j])
@@ -131,7 +131,7 @@ for(j in 1:length(species)){
 
      print(paste(species_name[j], round(t1, 2)))
 
-     results.path <- paste0(home.dir, "/Trawl_models/EBS/", species_name[j])
+     results.path <- paste0("G:/Laman/EFH-Descriptions/Trawl_models/EBS/", species_name[j])
      # if writing to an existing directory this will allow original directory to stand and suppress the warning that it exists
      # will need to be paired with overwrite = T down the line where necessary
      dir.create(results.path)
